@@ -1,0 +1,30 @@
+body {
+  box-sizing: border-box;
+}
+
+.search-form {
+  display: flex;
+
+  background-color: #009688;
+  height: 50px;
+  justify-content: center;
+  align-items: center;
+}
+
+input {
+  height: 30px;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+input::placeholder {
+  font-size: small;
+}
+
+button {
+  height: 30px;
+  border-radius: 4px;
+  background-color: gray;
+  color: #fff;
+  padding-bottom: 10px;
+}
