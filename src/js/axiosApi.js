@@ -4,7 +4,7 @@ import Notiflix from 'notiflix';
 const debounce = require('lodash.debounce');
 const DEBOUNCE_DELAY = 1000;
 
-const { input, button, buttonMore } = refs;
+const { input, button, buttonMore, gallery } = refs;
 const baseUrl = 'https://pixabay.com/api/';
 const apiKey = '?key=22659093-928fc585fa86297f1703a77f0';
 const params = '&image_type=photo&orientation=horizontal&safesearch=true';
@@ -26,12 +26,15 @@ function getImages(evt) {
       }
     })
     .then(photos => {
-      photos.map(photo => {
-        console.log(photo);
-        return `<div class="photo-card"><img src=${photo.webformatURL} alt=${photo.webformatURL} loading="lazy" /><div class="info"><p class="info-item"><b>Likes</b>${photo.likes}</p><p class="info-item"><b>Views</b>${photo.views}</p><p class="info-item"><b>Comments</b>${photo.comments}</p><p class="info-item"><b>Downloads</b>${photo.downloads}</p></div></div>`;
-      });
+      const fechedPhotos = photos
+        .map(photo => {
+          console.log(photo);
+          return `<div class="photo-card"><div class="photo-thumb"><img src=${photo.webformatURL} alt=${photo.webformatURL} loading="lazy" /></div><div class="info"><p class="info-item"><b>Likes</b><br />${photo.likes}</p><p class="info-item"><b>Views</b><br />${photo.views}</p><p class="info-item"><b>Comments</b><br />${photo.comments}</p><p class="info-item"><b>Downloads</b><br />${photo.downloads}</p></div></div>`;
+        })
+        .join('');
+      gallery.innerHTML = fechedPhotos;
     })
-    .catch(error => {
+    .catch(() => {
       Notiflix.Notify.failure(
         'Sorry, there are no images matching your search query. Please try again.',
       );
