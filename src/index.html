@@ -24,6 +24,31 @@
 
     <button type="button" class="load-more hidden">Load more</button>
 
+    <!--
+      Модальное окно для полноразмерного изображения
+      Для того чтобы открыть, необходимо добавить на div.modal CSS-класс is-open
+    -->
+    <div class="modal js-modal">
+      <div class="modal__overlay"></div>
+
+      <div class="modal__content">
+        <img class="modal__image" src="" alt="" />
+      </div>
+
+      <div>
+        <svg class="modal__arrow__left">
+          <use href="./images/sprite.svg#icon-arrow-left"></use>
+        </svg>
+      </div>
+      <div>
+        <svg class="modal__arrow__right">
+          <use href="./images/sprite.svg#icon-arrow-right"></use>
+        </svg>
+      </div>
+
+      <button type="button" class="modal__button" data-action="close-modal"></button>
+    </div>
+
     <script src="./index.js"></script>
   </body>
 </html>
