@@ -218,14 +218,15 @@ img {
 .modal__arrow__left {
   position: absolute;
 
-  color: #ffffff;
   top: 50%;
   left: 20px;
 
-  fill: white;
-
   width: 55px;
-  height: auto;
+
+  background-image: url('../images/icon-left.svg');
+  background-color: inherit;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .modal__arrow__right {
@@ -234,8 +235,11 @@ img {
   top: 50%;
   right: 20px;
 
-  fill: white;
-
   width: 55px;
-  height: auto;
+  height: 55px;
+
+  background-image: url('../images/icon-right.svg');
+  background-color: inherit;
+  background-position: center;
+  background-repeat: no-repeat;
 }

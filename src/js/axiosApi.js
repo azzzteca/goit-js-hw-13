@@ -1,8 +1,6 @@
 import axios from 'axios';
 import refs from './refs.js';
 import Notiflix from 'notiflix';
-const debounce = require('lodash.debounce');
-const DEBOUNCE_DELAY = 1000;
 
 const {
   form,
@@ -23,53 +21,91 @@ let page = 1;
 const per_page = 40;
 let query = '';
 let photosList = [];
-let totalHits = 0;
+let shownHits = 0;
 
-const params = `&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=${per_page}`;
+// const params = `&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=${per_page}`;
 
 form.addEventListener('submit', evt => {
   evt.preventDefault();
   gallery.innerHTML = '';
   // query = input.value;
   query = evt.target.elements.searchQuery.value;
+  resetPage();
   getImages();
+
+  form.reset();
 });
 
+function setPage() {
+  return (page += 1);
+}
+
+function resetPage() {
+  return (page = 1);
+}
+
 async function getImages() {
-  let url = baseUrl + apiKey + `&q=${query}` + params;
+  let url =
+    baseUrl +
+    apiKey +
+    `&q=${query}` +
+    `&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=${per_page}`;
   try {
     const response = await axios.get(url);
-    const data = response.data;
-    if (data.hits.length === 0) {
-      // totalHits = data.totalHits;
-      // console.log(totalHits);
 
+    const data = response.data;
+
+    if (data.totalHits === 0) {
       throw new Error();
     }
 
-    // console.log(data.hits);
+    if (data.hits.length === 0) {
+      buttonMore.classList.add('hidden');
+      Notiflix.Notify.info(`We're sorry, but you've reached the end of search results.`);
+    } else {
+      const cardsList = data.hits;
+      photosList = [...photosList, ...cardsList];
+      const fechedPhotos = cardsList
+        .map(photo => {
+          return `<div class="photo-card"><img src=${photo.webformatURL} alt=${photo.tags} data-url=${photo.largeImageURL} loading="lazy" /><div class="info"><p class="info-item"><b>Likes</b><br />${photo.likes}</p><p class="info-item"><b>Views</b><br />${photo.views}</p><p class="info-item"><b>Comments</b><br />${photo.comments}</p><p class="info-item"><b>Downloads</b><br />${photo.downloads}</p></div></div>`;
+        })
+        .join('');
 
-    photosList = data.hits;
-    const fechedPhotos = photosList
-      .map(photo => {
-        return `<div class="photo-card"><img src=${photo.webformatURL} alt=${photo.tags} data-url=${photo.largeImageURL} loading="lazy" /><div class="info"><p class="info-item"><b>Likes</b><br />${photo.likes}</p><p class="info-item"><b>Views</b><br />${photo.views}</p><p class="info-item"><b>Comments</b><br />${photo.comments}</p><p class="info-item"><b>Downloads</b><br />${photo.downloads}</p></div></div>`;
-      })
-      .join('');
+      if (page === 1) {
+        Notiflix.Notify.info(`Hooray! We found ${data.totalHits} images.`);
+      }
 
-    buttonMore.classList.remove('hidden');
-    gallery.insertAdjacentHTML('beforeend', fechedPhotos);
-    buttonMore.addEventListener('click', onLoadMore);
-    gallery.addEventListener('click', onModalopen);
+      buttonMore.classList.remove('hidden');
+      gallery.insertAdjacentHTML('beforeend', fechedPhotos);
+
+      buttonMore.addEventListener('click', onLoadMore);
+
+      // Вариант бесконечного скрола
+      // window.addEventListener('scroll', () => {
+      //   const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
+
+      //   if (scrollTop + clientHeight > scrollHeight - 20) {
+      //     onLoadMore();
+      //   }
+      // });
+
+      gallery.addEventListener('click', onModalopen);
+
+      window.scrollBy({
+        top: 0,
+        behavior: 'smooth',
+      });
+    }
   } catch (error) {
+    console.log(error);
     Notiflix.Notify.failure(
       'Sorry, there are no images matching your search query. Please try again.',
     );
   }
-  form.reset();
 }
 
 function onLoadMore() {
-  page += 1;
+  setPage();
 
   getImages();
 }
@@ -97,12 +133,7 @@ function onModalClose() {
 function onChangePhoto(evt) {
   const imageGallery = gallery.querySelectorAll('img');
 
-  // console.log(imageGallery[4].dataset.url);
-
-  // console.log(imageInModal.src);
   let idx = 0;
-
-  console.log(photosList);
 
   imageGallery.forEach((photo, index) => {
     if (photo.dataset.url === imageInModal.src) {
@@ -110,34 +141,13 @@ function onChangePhoto(evt) {
     }
   });
 
-  console.log(idx);
-
-  console.log(evt.target.classList);
-
   if (evt.target.classList.contains('modal__arrow__left')) {
-    console.log('двигаемся влево');
+    if (idx === 0 || idx === imageGallery.length - 1) {
+      return;
+    }
     imageInModal.src = photosList[idx - 1].largeImageURL;
-    // imageInModal.alt = evt.target.alt;
+    console.log(imageInModal.src);
   } else {
-    console.log('двигаемся вправо');
     imageInModal.src = photosList[idx + 1].largeImageURL;
   }
-
-  // console.log(evt.target.src);
-  // console.log(evt.target.dataset.url);
-
-  // for (let i = 0; i < photos.length; i += 1) {
-
-  //   if(photos[i].dataset.url === evt.target.)
-
-  // }
-
-  // console.log(evt.target.classList);
-  // if (evt.target.classList.contains('modal__arrow__right')) {
-  //   console.log('Меняем фото вправо');
-  //   return;
-  // } else {
-  //   console.log('меняем фото влево');
-  //   return;
-  // }
 }
