@@ -69,7 +69,9 @@ async function getImages() {
       photosList = [...photosList, ...cardsList];
       const fechedPhotos = cardsList
         .map(photo => {
-          return `<div class="photo-card"><img src=${photo.webformatURL} alt=${photo.tags} data-url=${photo.largeImageURL} loading="lazy" /><div class="info"><p class="info-item"><b>Likes</b><br />${photo.likes}</p><p class="info-item"><b>Views</b><br />${photo.views}</p><p class="info-item"><b>Comments</b><br />${photo.comments}</p><p class="info-item"><b>Downloads</b><br />${photo.downloads}</p></div></div>`;
+          // return `<div class="photo-card"><img src=${photo.webformatURL} alt=${photo.tags} data-url=${photo.largeImageURL} loading="lazy" /><div class="info"><p class="info-item"><b>Likes</b><br />${photo.likes}</p><p class="info-item"><b>Views</b><br />${photo.views}</p><p class="info-item"><b>Comments</b><br />${photo.comments}</p><p class="info-item"><b>Downloads</b><br />${photo.downloads}</p></div></div>`;
+
+          return `<a href=${photo.largeImageURL}><div class="photo-card"><img class="gallety-img" src=${photo.webformatURL} alt=${photo.tags} loading="lazy" /><div class="info"><p class="info-item"><b>Likes</b><br />${photo.likes}</p><p class="info-item"><b>Views</b><br />${photo.views}</p><p class="info-item"><b>Comments</b><br />${photo.comments}</p><p class="info-item"><b>Downloads</b><br />${photo.downloads}</p></div></div></a>`;
         })
         .join('');
 
@@ -106,7 +108,7 @@ async function getImages() {
   }
 }
 
-function onLoadMore() {
+function onLoadMore(evt) {
   setPage();
 
   getImages();
@@ -114,6 +116,10 @@ function onLoadMore() {
 
 function onModalopen(evt) {
   evt.preventDefault();
+
+  if (!evt.target.classList.contains('gallety-img')) {
+    return;
+  }
 
   modal.classList.add('is-open');
 
