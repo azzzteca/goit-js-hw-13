@@ -1,8 +1,9 @@
 import axios from 'axios';
 import refs from './refs.js';
 import Notiflix from 'notiflix';
-import SimpleLightbox from 'simplelightbox';
-import 'simplelightbox/dist/simple-lightbox.min.css';
+// import SimpleLightbox from 'simplelightbox';
+// import 'simplelightbox/dist/simple-lightbox.min.css';
+import { infiniteScroll } from './infiniteScroll.js';
 
 const {
   form,
@@ -17,6 +18,8 @@ const {
   modalOverlay,
 } = refs;
 
+// new SimpleLightbox({ elements: '.imageGallery1 a' });
+
 const baseUrl = 'https://pixabay.com/api/';
 const apiKey = '?key=22659093-928fc585fa86297f1703a77f0';
 let page = 1;
@@ -24,8 +27,6 @@ const per_page = 40;
 let query = '';
 let photosList = [];
 let shownHits = 0;
-
-// const params = `&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=${per_page}`;
 
 form.addEventListener('submit', evt => {
   evt.preventDefault();
@@ -71,7 +72,7 @@ async function getImages() {
         .map(photo => {
           return `<div class="photo-card"><img class="gallery-img" src=${photo.webformatURL} alt=${photo.tags} data-url=${photo.largeImageURL} loading="lazy" /><div class="info"><p class="info-item"><b>Likes</b><br />${photo.likes}</p><p class="info-item"><b>Views</b><br />${photo.views}</p><p class="info-item"><b>Comments</b><br />${photo.comments}</p><p class="info-item"><b>Downloads</b><br />${photo.downloads}</p></div></div>`;
 
-          // return `<a href=${photo.largeImageURL}><div class="photo-card"><img class="gallety-img" src=${photo.webformatURL} alt=${photo.tags} loading="lazy" /><div class="info"><p class="info-item"><b>Likes</b><br />${photo.likes}</p><p class="info-item"><b>Views</b><br />${photo.views}</p><p class="info-item"><b>Comments</b><br />${photo.comments}</p><p class="info-item"><b>Downloads</b><br />${photo.downloads}</p></div></div></a>`;
+          // return `<a href=${photo.largeImageURL}><div class="photo-card"><img class="gallety-img" src=${photo.webformatURL} alt=${photo.tags} data-url=${photo.largeImageURL} loading="lazy" /><div class="info"><p class="info-item"><b>Likes</b><br />${photo.likes}</p><p class="info-item"><b>Views</b><br />${photo.views}</p><p class="info-item"><b>Comments</b><br />${photo.comments}</p><p class="info-item"><b>Downloads</b><br />${photo.downloads}</p></div></div></a>`;
         })
         .join('');
 
@@ -79,21 +80,21 @@ async function getImages() {
         Notiflix.Notify.info(`Hooray! We found ${data.totalHits} images.`);
       }
 
+      // Для варианта бесконечного скролла закомментировать вниз
       buttonMore.classList.remove('hidden');
+      buttonMore.addEventListener('click', onLoadMore);
+      // Для варианта бесконечного скролла закомментировать вверх
+
       gallery.insertAdjacentHTML('beforeend', fechedPhotos);
 
-      buttonMore.addEventListener('click', onLoadMore);
-
-      // Вариант бесконечного скрола
-      // window.addEventListener('scroll', () => {
-      //   const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
-
-      //   if (scrollTop + clientHeight > scrollHeight - 20) {
-      //     onLoadMore();
-      //   }
-      // });
+      // Вариант бесконечного скрола - раскомментировать
+      // infiniteScroll();
 
       gallery.addEventListener('click', onModalopen);
+
+      // SimpleLightbox.open({
+      //   items: ['demo/images/1big.jpg', 'demo/images/2big.jpg', 'demo/images/3big.jpg'],
+      // });
 
       window.scrollBy({
         top: 0,
@@ -108,7 +109,7 @@ async function getImages() {
   }
 }
 
-function onLoadMore(evt) {
+export function onLoadMore(evt) {
   setPage();
 
   getImages();
