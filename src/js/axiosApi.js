@@ -1,8 +1,8 @@
 import axios from 'axios';
 import refs from './refs.js';
 import Notiflix from 'notiflix';
-// import SimpleLightbox from 'simplelightbox';
-// import 'simplelightbox/dist/simple-lightbox.min.css';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 import { infiniteScroll } from './infiniteScroll.js';
 
 const {
@@ -18,15 +18,13 @@ const {
   modalOverlay,
 } = refs;
 
-// new SimpleLightbox({ elements: '.imageGallery1 a' });
-
 const baseUrl = 'https://pixabay.com/api/';
 const apiKey = '?key=22659093-928fc585fa86297f1703a77f0';
 let page = 1;
 const per_page = 40;
 let query = '';
 let photosList = [];
-let shownHits = 0;
+let galleryForSimpleLightBox;
 
 form.addEventListener('submit', evt => {
   evt.preventDefault();
@@ -70,9 +68,10 @@ async function getImages() {
       photosList = [...photosList, ...cardsList];
       const fechedPhotos = cardsList
         .map(photo => {
-          return `<div class="photo-card"><img class="gallery-img" src=${photo.webformatURL} alt=${photo.tags} data-url=${photo.largeImageURL} loading="lazy" /><div class="info"><p class="info-item"><b>Likes</b><br />${photo.likes}</p><p class="info-item"><b>Views</b><br />${photo.views}</p><p class="info-item"><b>Comments</b><br />${photo.comments}</p><p class="info-item"><b>Downloads</b><br />${photo.downloads}</p></div></div>`;
+          // Создание списка фото для модалки без использования библиотеки
+          // return `<div class="photo-card"><img class="gallery-img" src=${photo.webformatURL} alt=${photo.tags} data-url=${photo.largeImageURL} loading="lazy" /><div class="info"><p class="info-item"><b>Likes</b><br />${photo.likes}</p><p class="info-item"><b>Views</b><br />${photo.views}</p><p class="info-item"><b>Comments</b><br />${photo.comments}</p><p class="info-item"><b>Downloads</b><br />${photo.downloads}</p></div></div>`;
 
-          // return `<a href=${photo.largeImageURL}><div class="photo-card"><img class="gallety-img" src=${photo.webformatURL} alt=${photo.tags} data-url=${photo.largeImageURL} loading="lazy" /><div class="info"><p class="info-item"><b>Likes</b><br />${photo.likes}</p><p class="info-item"><b>Views</b><br />${photo.views}</p><p class="info-item"><b>Comments</b><br />${photo.comments}</p><p class="info-item"><b>Downloads</b><br />${photo.downloads}</p></div></div></a>`;
+          return `<a href=${photo.largeImageURL}><div class="photo-card"><img class="gallery-img" src=${photo.webformatURL} alt=${photo.tags} /><div class="info"><p class="info-item"><b>Likes</b><br />${photo.likes}</p><p class="info-item"><b>Views</b><br />${photo.views}</p><p class="info-item"><b>Comments</b><br />${photo.comments}</p><p class="info-item"><b>Downloads</b><br />${photo.downloads}</p></div></div></a>`;
         })
         .join('');
 
@@ -87,14 +86,13 @@ async function getImages() {
 
       gallery.insertAdjacentHTML('beforeend', fechedPhotos);
 
-      // Вариант бесконечного скрола - раскомментировать
+      // Для варианта бесконечного скролла раскомментировать вниз
       // infiniteScroll();
+      // Для варианта бесконечного скролла раскомментировать вверх
+
+      galleryForSimpleLightBox = new SimpleLightbox('.gallery a');
 
       gallery.addEventListener('click', onModalopen);
-
-      // SimpleLightbox.open({
-      //   items: ['demo/images/1big.jpg', 'demo/images/2big.jpg', 'demo/images/3big.jpg'],
-      // });
 
       window.scrollBy({
         top: 0,
@@ -115,48 +113,57 @@ export function onLoadMore(evt) {
   getImages();
 }
 
+// Вариант модалки без использования библиотеки
+// function onModalopen(evt) {
+//   evt.preventDefault();
+
+//   if (!evt.target.classList.contains('gallery-img')) {
+//     return;
+//   }
+
+//   modal.classList.add('is-open');
+
+//   imageInModal.src = evt.target.dataset.url;
+//   imageInModal.alt = evt.target.alt;
+
+//   closeBtn.addEventListener('click', onModalClose);
+//   modalOverlay.addEventListener('click', onModalClose);
+//   arrowLeft.addEventListener('click', onChangePhoto);
+//   arrowRight.addEventListener('click', onChangePhoto);
+// }
+
+// Использование для модалки библиотеки simplelightbox
+
 function onModalopen(evt) {
-  evt.preventDefault();
-
-  if (!evt.target.classList.contains('gallery-img')) {
-    return;
-  }
-
-  modal.classList.add('is-open');
-
-  imageInModal.src = evt.target.dataset.url;
-  imageInModal.alt = evt.target.alt;
-
-  closeBtn.addEventListener('click', onModalClose);
-  modalOverlay.addEventListener('click', onModalClose);
-  arrowLeft.addEventListener('click', onChangePhoto);
-  arrowRight.addEventListener('click', onChangePhoto);
+  galleryForSimpleLightBox.on('shown.simplelightbox', function () {});
 }
 
-function onModalClose() {
-  modal.classList.remove('is-open');
-  imageInModal.src = '';
-  imageInModal.alt = '';
-}
+// При использовании библиотеки simplelightbox код ниже не нужен
+// function onModalClose() {
+//   modal.classList.remove('is-open');
+//   imageInModal.src = '';
+//   imageInModal.alt = '';
+// }
 
-function onChangePhoto(evt) {
-  const imageGallery = gallery.querySelectorAll('img');
+// function onChangePhoto(evt) {
+//   const imageGallery = gallery.querySelectorAll('img');
 
-  let idx = 0;
+//   let idx = 0;
 
-  imageGallery.forEach((photo, index) => {
-    if (photo.dataset.url === imageInModal.src) {
-      idx = index;
-    }
-  });
+//   imageGallery.forEach((photo, index) => {
+//     if (photo.dataset.url === imageInModal.src) {
+//       idx = index;
+//     }
+//   });
 
-  if (evt.target.classList.contains('modal__arrow__left')) {
-    if (idx === 0 || idx === imageGallery.length - 1) {
-      return;
-    }
-    imageInModal.src = photosList[idx - 1].largeImageURL;
-    console.log(imageInModal.src);
-  } else {
-    imageInModal.src = photosList[idx + 1].largeImageURL;
-  }
-}
+//   if (evt.target.classList.contains('modal__arrow__left')) {
+//     if (idx === 0 || idx === imageGallery.length - 1) {
+//       return;
+//     }
+//     imageInModal.src = photosList[idx - 1].largeImageURL;
+//     console.log(imageInModal.src);
+//   } else {
+//     imageInModal.src = photosList[idx + 1].largeImageURL;
+//   }
+// }
+// При использовании библиотеки simplelightbox код выше не нужен

@@ -10,8 +10,6 @@
       integrity="sha512-ISS7cAi1PEhQ8jnbJpJZMd29NlhNj4AWYyLOSp2CE/CsHxTCu+r+t0D2yoJudVrd0/8fTVPUVDzY5Tvli75u/g=="
       crossorigin="anonymous"
     />
-
-    <!-- <link rel="stylesheet" href="../node_modules/simplelightbox/dist/simple-lightbox.min.css" /> -->
   </head>
 
   <body>
@@ -20,24 +18,21 @@
       <button type="submit">Search</button>
     </form>
 
-    <div class="gallery">
-      <!-- Карточки изображений -->
-    </div>
+    <div class="gallery"></div>
 
     <button type="button" class="load-more hidden">Load more</button>
 
-    <!--
-      Модальное окно для полноразмерного изображения
-      Для того чтобы открыть, необходимо добавить на div.modal CSS-класс is-open
-    -->
-    <div class="modal js-modal">
+    <!-- При использовании библиотеки simplelightbox код ниже не нужен -->
+    <!-- <div class="modal js-modal">
       <div class="modal__overlay"></div>
 
       <div class="modal__content">
         <img class="modal__image" src="" alt="" />
-      </div>
+      </div> -->
+    <!-- При использовании библиотеки simplelightbox код выше не нужен -->
 
-      <!-- <div>
+    <!-- Переделал данный вариант по причине того, что слушатель событий не воспринимает часть svg (path) как целое -->
+    <!-- <div>
         <svg class="modal__arrow__left">
           <use href="./images/sprite.svg#icon-arrow-left"></use>
         </svg>
@@ -48,13 +43,12 @@
         </svg>
       </div> -->
 
-      <button type="button" class="modal__arrow__left"></button>
-      <button type="button" class="modal__arrow__right"></button>
-
-      <button type="button" class="modal__button" data-action="close-modal"></button>
-    </div>
+    <!-- При использовании библиотеки simplelightbox код ниже не нужен -->
+    <!-- <button type="button" class="modal__arrow__left"></button>
+      <button type="button" class="modal__arrow__right"></button> -->
+    <!-- <button type="button" class="modal__button" data-action="close-modal"></button></div> -->
+    <!-- При использовании библиотеки simplelightbox код выше не нужен -->
 
     <script src="./index.js"></script>
-    <!-- <script src="../node_modules/simplelightbox/src/simple-lightbox.js"></script> -->
   </body>
 </html>
